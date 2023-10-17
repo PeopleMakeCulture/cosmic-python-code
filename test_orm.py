@@ -1,12 +1,25 @@
 import pytest
-import model
 
-# from sqlalchemy import session
-# from model import Orderline
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker, clear_mappers
+from model import OrderLine
+from orm import start_mappers, metadata 
 
-# from orm import start_mappers, order_lines
+@pytest.fixture
+def in_memory_db():
+    engine = create_engine("sqlite:///:memory:")
+    metadata.create_all(engine)
+    return engine
 
+@pytest.fixture
+def session(in_memory_db):
+    start_mappers()
+    yield sessionmaker(bind=in_memory_db)()
+    clear_mappers()
+
+# @pytest.mark.skip
 def test_orderline_mapper_can_load_lines(session):  #(1)
+
     session.execute(
         "INSERT INTO order_lines (orderid, sku, qty) VALUES "
         '("order1", "RED-CHAIR", 12),'
@@ -14,15 +27,18 @@ def test_orderline_mapper_can_load_lines(session):  #(1)
         '("order2", "BLUE-LIPSTICK", 14)'
     )
     expected = [
-        model.OrderLine("order1", "RED-CHAIR", 12),
-        model.OrderLine("order1", "RED-TABLE", 13),
-        model.OrderLine("order2", "BLUE-LIPSTICK", 14),
+        OrderLine("order1", "RED-CHAIR", 12),
+        OrderLine("order1", "RED-TABLE", 13),
+        OrderLine("order2", "BLUE-LIPSTICK", 14),
     ]
-    assert session.query(model.OrderLine).all() == expected
+    # result = session.query(OrderLine).all()
+    # print(f"result: {result}")
+
+    assert session.query(OrderLine).all() == expected
 
 
 def test_orderline_mapper_can_save_lines(session):
-    new_line = model.OrderLine("order1", "DECORATIVE-WIDGET", 12)
+    new_line = OrderLine("order1", "DECORATIVE-WIDGET", 12)
     session.add(new_line)
     session.commit()
 

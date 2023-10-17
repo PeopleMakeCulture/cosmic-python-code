@@ -1,10 +1,10 @@
 from sqlalchemy.orm import mapper, relationship
-
-import model # from model.py
+from sqlalchemy import Column, Table, MetaData, Integer, String
+from model import OrderLine # from model.py
 
 metadata = MetaData()
 
-order_lines = Table(
+order_lines_table = Table(
 	"order_lines",
 	metadata,
 	Column("id", Integer, primary_key=True, autoincrement=True),
@@ -22,4 +22,4 @@ order_lines = Table(
 	# )
 
 def start_mappers():
-	order_lines_mapper = mapper(model.OrderLine, order_lines)
+	order_lines_mapper = mapper(OrderLine, order_lines_table)
