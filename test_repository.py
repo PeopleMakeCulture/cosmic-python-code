@@ -1,8 +1,8 @@
-# imports - can pycharm add?
 from repository import SqlAlchemyRepository
 from model import Batch, OrderLine
 
-# import session - not needed - WHY? BC session is coming from pytest not SA
+# TODO: Finish writing tests, then make them work
+# NOTE: Do I need to update orm.py? Maybe not if I have repository.py?
 
 
 def test_repository_can_save_a_batch(session):
@@ -12,7 +12,7 @@ def test_repository_can_save_a_batch(session):
     session.commit()
 
     rows = session.execute(
-        'SELECT reference, sku, _purchased_quantity, eta FROM "batches"'
+        'SELECT reference, sku, _initial_quantity, eta FROM "batches"'
     )
 
     assert list(rows) == [("batch1", "RUSTY_NAIL", 100, None)]
@@ -31,13 +31,21 @@ def insert_order_line(session):
 
 # creates a couple batches
 def insert_batch(session, batch_id):
-    # TODO
+    session.execute(
+        "INSERT INTO batches (reference, sku, _initial_quantity, eta)" 
+        'VALUES (:batch_id, "SOFA", 100, null)',
+        dict(batch_id=batch_id) #Q: What does this do?
+    )
+    [[batch_id]] = session.execute(
+        'SELECT id FROM batches WHERE reference=:batch_id AND sku="SOFA"',
+        dict(batch_id=batch_id),
+    )
     return batch_id
 
 
 # allocate an order line to a batch
 def insert_allocation(session, orderline_id, batch_id):
-    # TODO
+    # TODO: START HERE
     pass
 
 
@@ -55,5 +63,13 @@ def test_repository_can_retrieve_a_batch_with_allocations(session):
     expected = Batch("batch1", "SOFA", 100, eta=None)
     assert retrieved == expected
     assert retrieved.sku == expected.sku
-    assert retrieved._purchased_quantity == expected._purchased_quantity
+    assert retrieved._initial_quantity == expected._initial_quantity
     assert retrieved._allocations == {OrderLine("order1", "SOFA", 12)}
+
+# TODO
+def get_allocations(session, batchid):
+    pass
+
+# TODO
+def test_updating_a_batch(session):
+    pass
