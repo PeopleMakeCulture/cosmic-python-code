@@ -4,7 +4,7 @@ from typing import Optional, List
 
 
 class Batch:
-    def __init__(self, ref: str, sku: str, qty: int, eta: date):
+    def __init__(self, ref: str, sku: str, qty: int, eta: Optional[date]):
         self.reference = ref
         self.sku = sku
         self.eta = eta
