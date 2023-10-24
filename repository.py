@@ -1,3 +1,5 @@
+from typing import Set
+
 from model import Batch
 from abc import ABC, abstractmethod
 
@@ -15,7 +17,7 @@ class AbstractRepository(ABC):
         raise NotImplementedError
 
 
-class SqlAlchemyRepository:
+class SqlAlchemyRepository(AbstractRepository):
     def __init__(self, session):
         self.session = session
 
@@ -27,3 +29,18 @@ class SqlAlchemyRepository:
 
     def list(self):
         return self.session.query(Batch).all()
+
+
+class FakeRepository(AbstractRepository):
+
+    def __init__(self, batches):
+        self._batches = set(batches)
+
+    def add(self, batch) -> None:
+        self._batches.add(batch)
+
+    def get(self, ref) -> Batch:
+        return next(b for b in self._batches if b.ref == ref)
+
+    def list(self) -> Set[Batch]:
+        return self._batches
