@@ -15,7 +15,7 @@ class AbstractRepository(ABC):
         raise NotImplementedError
 
 
-class SqlAlchemyRepository():
+class SqlAlchemyRepository:
     def __init__(self, session):
         self.session = session
 
