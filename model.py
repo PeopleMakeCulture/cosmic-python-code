@@ -1,5 +1,4 @@
 from dataclasses import dataclass
-from attrs import define
 from datetime import date
 from typing import Optional, List
 
@@ -61,11 +60,6 @@ class OrderLine:
     orderid: str
     sku: str
     qty: int = 0
-
-    # def __init__(self, order_ref: str, sku: str, qty: int):
-    #     self.orderid = order_ref
-    #     self.sku = sku
-    #     self.qty = qty
 
 
 class OutOfStock(Exception):
