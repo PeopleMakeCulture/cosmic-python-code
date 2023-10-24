@@ -1,5 +1,7 @@
+from dataclasses import dataclass
+from attrs import define
 from datetime import date
-from typing import Optional
+from typing import Optional, List
 
 
 class Batch:
@@ -53,18 +55,24 @@ class Batch:
         return hash(self.reference)
 
 
+@dataclass(unsafe_hash=True)
+# @define
 class OrderLine:
-    def __init__(self, order_ref: str, sku: str, qty: int):
-        self.orderid = order_ref
-        self.sku = sku
-        self.qty = qty
+    orderid: str
+    sku: str
+    qty: int = 0
+
+    # def __init__(self, order_ref: str, sku: str, qty: int):
+    #     self.orderid = order_ref
+    #     self.sku = sku
+    #     self.qty = qty
 
 
 class OutOfStock(Exception):
     pass
 
 
-def allocate(line: OrderLine, batches: list[Batch]) -> Optional[str]:
+def allocate(line: OrderLine, batches: List[Batch]) -> Optional[str]:
     try:
         batch = next(b for b in sorted(batches) if b.can_allocate(line))
         batch.allocate(line)
